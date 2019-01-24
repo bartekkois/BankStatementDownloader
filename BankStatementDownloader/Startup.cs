@@ -1,9 +1,13 @@
+using BankStatementDownloader.Services;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Localization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using System;
+using System.Globalization;
 
 namespace BankStatementDownloader
 {
@@ -26,13 +30,29 @@ namespace BankStatementDownloader
                 options.MinimumSameSitePolicy = SameSiteMode.None;
             });
 
-
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
+            services.AddHttpClient<BankAccountClient>(client => client.BaseAddress = new Uri(Configuration["BankApi:Url"])).SetHandlerLifetime(TimeSpan.FromMinutes(5)); ; 
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)
         {
+            var supportedCultures = new[]
+{
+                      new CultureInfo("en-US"),
+                      new CultureInfo("en-GB"),
+                      new CultureInfo("en"),
+                      new CultureInfo("pl-PL"),
+                      new CultureInfo("pl")
+            };
+
+            app.UseRequestLocalization(new RequestLocalizationOptions
+            {
+                DefaultRequestCulture = new RequestCulture("en-US"),
+                SupportedCultures = supportedCultures,
+                SupportedUICultures = supportedCultures
+            });
+
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
