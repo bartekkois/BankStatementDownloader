@@ -1,10 +1,45 @@
 ﻿@page
+@using BankStatementDownloader.Models
+@using BankStatementDownloader.Utils
 @model IndexModel
 @{
-    ViewData["Title"] = "Home page";
+    ViewData["Title"] = "Lista wyciągów bankowych";
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://docs.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
-</div>
+<p></p>
+@if (!String.IsNullOrEmpty(Model.ExceptionMessage))
+{
+    <div class="alert alert-dismissible alert-danger">
+        @Model.ExceptionMessage
+    </div>
+}
+else if ((Model.BankStatementsList.Content == null) || (!Model.BankStatementsList.Content.Any()))
+{
+    <div class="alert alert-dismissible alert-danger">
+        Błąd wyświetlania listy wyciągów bankowych
+    </div>
+}
+else
+{
+    <table class="table table-striped table-hover table-sm mt-lg-5">
+        <thead>
+            <tr class="d-flex">
+                <th class="col-sm-3 text-center" scope="col">#</th>
+                <th class="col-sm-3 text-center" scope="col">Data</th>
+                <th class="col-sm-3 text-center" scope="col">Dzień tygodnia</th>
+                <th class="col-sm-3 text-center" scope="col"></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (BankStatement bankStatement in Model.BankStatementsList.Content)
+            {
+                <tr class="d-flex">
+                    <td class="col-sm-3 text-center">@Model.BankStatementsList.Content.IndexOf(bankStatement)</td>
+                    <td class="col-sm-3 text-center"><b>@Utils.UnixTimeStampToLocalDateTime(bankStatement.DateFrom).ToString("yyyy.MM.dd")</b></td>
+                    <td class="col-sm-3 text-center"><b>@System.Globalization.DateTimeFormatInfo.CurrentInfo.GetDayName(Utils.UnixTimeStampToLocalDateTime(bankStatement.DateFrom).DayOfWeek)</b></td>
+                    <td class="col-sm-3 text-center"><a class="btn btn-secondary btn-sm" title="Pobierz" method="get" asp-page="/Index" asp-page-handler="DownloadMt940BankStatement" asp-route-statementId="@bankStatement.StatementId" asp-route-dateFrom="@bankStatement.DateFrom">Pobierz</a></td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
