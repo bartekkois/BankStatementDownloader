@@ -1,3 +1,4 @@
+using BankStatementDownloader.Middlewares;
 using BankStatementDownloader.Services;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -6,6 +7,7 @@ using Microsoft.AspNetCore.Localization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Globalization;
 
@@ -13,9 +15,12 @@ namespace BankStatementDownloader
 {
     public class Startup
     {
+        private ILoggerFactory _loggerFactory;
+
         public Startup(IConfiguration configuration)
         {
             Configuration = configuration;
+            _loggerFactory = new LoggerFactory();
         }
 
         public IConfiguration Configuration { get; }
@@ -31,6 +36,7 @@ namespace BankStatementDownloader
             });
 
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
+
             services.AddHttpClient<BankAccountClient>(client => client.BaseAddress = new Uri(Configuration["BankApi:Url"])).SetHandlerLifetime(TimeSpan.FromMinutes(5)); ; 
         }
 
@@ -63,6 +69,9 @@ namespace BankStatementDownloader
             }
 
             app.UseStaticFiles();
+
+            app.UseMiddleware<AllowedIpAddressesMiddleware>(Configuration["AllowedIpAddressesList"]);
+
             app.UseCookiePolicy();
 
             app.UseMvc();
