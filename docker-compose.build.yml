@@ -1,0 +1,13 @@
+version: '3.5'
+
+services:
+  bankstatementdownloader:
+    image: bartekkois/bankstatementdownloader:1.0.0
+    restart: always
+    volumes:
+      - /docker/BankStatementDownloader/appsettings.json:/app/appsettings.json:ro
+    ports:
+      - "5001:80"
+    build:
+      context: .
+      dockerfile: ./Dockerfile
