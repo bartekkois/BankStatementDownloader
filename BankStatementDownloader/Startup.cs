@@ -37,7 +37,8 @@ namespace BankStatementDownloader
 
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
 
-            services.AddHttpClient<BankAccountClient>(client => client.BaseAddress = new Uri(Configuration["BankApi:Url"])).SetHandlerLifetime(TimeSpan.FromMinutes(5)); ; 
+            services.AddHttpClient<IBankApiClient, BankApiClient>().SetHandlerLifetime(TimeSpan.FromMinutes(5));
+            services.AddSingleton<IBankAccountClient, BankAccountClient>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

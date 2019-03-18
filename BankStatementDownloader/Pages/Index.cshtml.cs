@@ -14,7 +14,7 @@ namespace BankStatementDownloader.Pages
         public BankStatementsList BankStatementsList;
         public string ExceptionMessage { get; set; }
 
-        public async Task<IActionResult> OnGet([FromServices]BankAccountClient client, [FromServices]IConfiguration configuration, int numberOfDays=14)
+        public async Task<IActionResult> OnGet([FromServices]IBankAccountClient client, [FromServices]IConfiguration configuration, int numberOfDays=14)
         {
             try
             {
@@ -34,7 +34,7 @@ namespace BankStatementDownloader.Pages
             }
         }
 
-        public async Task<IActionResult> OnGetDownloadMt940BankStatement([FromServices]BankAccountClient client, [FromServices]IConfiguration configuration, int statementId, double dateFrom)
+        public async Task<IActionResult> OnGetDownloadMt940BankStatement([FromServices]IBankAccountClient client, [FromServices]IConfiguration configuration, int statementId, double dateFrom)
         {
             try
             {
