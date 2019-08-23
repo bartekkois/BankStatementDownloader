@@ -21,8 +21,8 @@ namespace BankStatementDownloader.Pages
                 if ((await client.Login()).Status != "CREDENTIALS_CORRECT")
                     throw new Exception("Błąd logowania do systemu bankowego");
 
-                var bankAccountsList = await client.GetBankAccountsList(configuration["BankApi:Username"], false, 1, 10);
-                BankStatementsList = await client.GetBankStatementsList(bankAccountsList.Content.First(s => s.AccountNo == configuration["BankApi:AccountNo"]).AccountId, DateTime.Now.AddDays(numberOfDays * -1), DateTime.Now, false);
+                var bankAccountsList = await client.GetBankAccountsList(configuration["BankApi:Username"]);
+                BankStatementsList = await client.GetBankStatementsList(bankAccountsList.Content.First(s => s.IsVatAccount == false).AccountId, DateTime.Now.AddDays(numberOfDays * -1), DateTime.Now, false);
                 await client.Logout();
 
                 return Page();

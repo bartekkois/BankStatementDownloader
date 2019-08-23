@@ -3,6 +3,6 @@
     public class BankAccount
     {
         public string AccountId { get; set; }
-        public string AccountNo { get; set; }
+        public bool IsVatAccount { get; set; }
     }
 }

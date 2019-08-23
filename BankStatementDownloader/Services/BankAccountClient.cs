@@ -52,11 +52,11 @@ namespace BankStatementDownloader.Services
             }
         }
 
-        public async Task<BankAccountsList> GetBankAccountsList(string accountId, bool includeLimitedAccess, int pageNumber, int pageSize)
+        public async Task<BankAccountsList> GetBankAccountsList(string accountId)
         {
             try
             {
-                var bankAccountsListResponse = await _bankApiClient.GetAsync($"/frontend-web/api/account?customerId={_configuration["BankApi:Username"]}&includeLimitedAccess=false&pageNumber={pageNumber}&pageSize={pageSize}");
+                var bankAccountsListResponse = await _bankApiClient.GetAsync($"/frontend-web/api/account?customerId={_configuration["BankApi:Username"]}&fields=isVatAccount,virtualEnabled,currency&pageSize=999");
                 bankAccountsListResponse.EnsureSuccessStatusCode();
 
                 return JsonConvert.DeserializeObject<BankAccountsList>(await bankAccountsListResponse.Content.ReadAsStringAsync());
